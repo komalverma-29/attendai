@@ -49,7 +49,7 @@ public class PersonController {
     /** GET /api/v1/core/persons/{id} — Retrieve a person by ID. */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('CORE_PERSON_READ')")
-    public ResponseEntity<ApiResponse<PersonResponse>> getPerson(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<PersonResponse>> getPerson(@PathVariable("id") Long id) {
         return ResponseEntity.ok(ApiResponse.success(personService.findById(id)));
     }
 
@@ -70,7 +70,7 @@ public class PersonController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('CORE_PERSON_UPDATE')")
     public ResponseEntity<ApiResponse<PersonResponse>> updatePerson(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody UpdatePersonRequest request) {
         return ResponseEntity.ok(ApiResponse.success(personService.updatePerson(id, request)));
     }
@@ -78,7 +78,7 @@ public class PersonController {
     /** DELETE /api/v1/core/persons/{id} — Soft-delete a person. */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('CORE_PERSON_DELETE')")
-    public ResponseEntity<Void> deletePerson(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePerson(@PathVariable("id") Long id) {
         personService.deletePerson(id);
         return ResponseEntity.noContent().build();
     }

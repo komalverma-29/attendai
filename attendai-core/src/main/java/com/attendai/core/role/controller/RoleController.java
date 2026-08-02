@@ -45,7 +45,7 @@ public class RoleController {
 
     @GetMapping("/api/v1/core/roles/{id}")
     @PreAuthorize("hasAuthority('CORE_ROLE_READ')")
-    public ResponseEntity<ApiResponse<RoleResponse>> getRole(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<RoleResponse>> getRole(@PathVariable("id") Long id) {
         return ResponseEntity.ok(ApiResponse.success(roleService.findById(id)));
     }
 
@@ -60,13 +60,13 @@ public class RoleController {
     @PutMapping("/api/v1/core/roles/{id}")
     @PreAuthorize("hasAuthority('CORE_ROLE_UPDATE')")
     public ResponseEntity<ApiResponse<RoleResponse>> updateRole(
-            @PathVariable Long id, @Valid @RequestBody UpdateRoleRequest req) {
+            @PathVariable("id") Long id, @Valid @RequestBody UpdateRoleRequest req) {
         return ResponseEntity.ok(ApiResponse.success(roleService.updateRole(id, req)));
     }
 
     @DeleteMapping("/api/v1/core/roles/{id}")
     @PreAuthorize("hasAuthority('CORE_ROLE_DELETE')")
-    public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteRole(@PathVariable("id") Long id) {
         roleService.deleteRole(id);
         return ResponseEntity.noContent().build();
     }
@@ -78,21 +78,21 @@ public class RoleController {
     @PostMapping("/api/v1/core/users/{userId}/roles")
     @PreAuthorize("hasAuthority('CORE_ROLE_ASSIGN')")
     public ResponseEntity<ApiResponse<Map<String, String>>> assignRole(
-            @PathVariable Long userId, @Valid @RequestBody AssignRoleRequest req) {
+            @PathVariable("userId") Long userId, @Valid @RequestBody AssignRoleRequest req) {
         roleService.assignRoleToUser(userId, req);
         return ResponseEntity.ok(ApiResponse.success(Map.of("message", "Role assigned successfully")));
     }
 
     @DeleteMapping("/api/v1/core/users/{userId}/roles/{roleId}")
     @PreAuthorize("hasAuthority('CORE_ROLE_ASSIGN')")
-    public ResponseEntity<Void> removeRole(@PathVariable Long userId, @PathVariable Long roleId) {
+    public ResponseEntity<Void> removeRole(@PathVariable("userId") Long userId, @PathVariable("roleId") Long roleId) {
         roleService.removeRoleFromUser(userId, roleId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/api/v1/core/users/{userId}/roles")
     @PreAuthorize("hasAuthority('CORE_ROLE_READ')")
-    public ResponseEntity<ApiResponse<List<RoleSummaryResponse>>> getRolesForUser(@PathVariable Long userId) {
+    public ResponseEntity<ApiResponse<List<RoleSummaryResponse>>> getRolesForUser(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(ApiResponse.success(roleService.getRolesForUser(userId)));
     }
 }

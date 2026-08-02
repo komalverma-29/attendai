@@ -55,7 +55,7 @@ public class UserController {
     /** GET /api/v1/core/users/{id} — Retrieve a user by ID. */
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('CORE_USER_READ')")
-    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<UserResponse>> getUser(@PathVariable("id") Long id) {
         return ResponseEntity.ok(ApiResponse.success(userService.findById(id)));
     }
 
@@ -74,7 +74,7 @@ public class UserController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('CORE_USER_UPDATE')")
     public ResponseEntity<ApiResponse<UserResponse>> updateUser(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(ApiResponse.success(userService.updateUser(id, request)));
     }
@@ -83,7 +83,7 @@ public class UserController {
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAuthority('CORE_USER_UPDATE')")
     public ResponseEntity<ApiResponse<UserResponse>> changeStatus(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ChangeStatusRequest request) {
         return ResponseEntity.ok(ApiResponse.success(userService.changeStatus(id, request)));
     }
@@ -97,7 +97,7 @@ public class UserController {
      */
     @PostMapping("/{id}/change-password")
     public ResponseEntity<ApiResponse<Map<String, String>>> changePassword(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ChangePasswordRequest request) {
 
         Long currentUserId = SecurityContextUtils.getCurrentUserId().orElse(null);
@@ -120,7 +120,7 @@ public class UserController {
     /** DELETE /api/v1/core/users/{id} — Soft-delete a user account. */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('CORE_USER_DELETE')")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

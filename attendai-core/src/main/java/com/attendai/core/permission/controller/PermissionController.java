@@ -43,7 +43,7 @@ public class PermissionController {
 
     @GetMapping("/api/v1/core/permissions/{id}")
     @PreAuthorize("hasAuthority('CORE_PERMISSION_READ')")
-    public ResponseEntity<ApiResponse<PermissionResponse>> getPermission(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<PermissionResponse>> getPermission(@PathVariable("id") Long id) {
         return ResponseEntity.ok(ApiResponse.success(permissionService.findById(id)));
     }
 
@@ -60,13 +60,13 @@ public class PermissionController {
     @PutMapping("/api/v1/core/permissions/{id}")
     @PreAuthorize("hasAuthority('CORE_PERMISSION_UPDATE')")
     public ResponseEntity<ApiResponse<PermissionResponse>> updatePermission(
-            @PathVariable Long id, @Valid @RequestBody UpdatePermissionRequest req) {
+            @PathVariable("id") Long id, @Valid @RequestBody UpdatePermissionRequest req) {
         return ResponseEntity.ok(ApiResponse.success(permissionService.updatePermission(id, req)));
     }
 
     @DeleteMapping("/api/v1/core/permissions/{id}")
     @PreAuthorize("hasAuthority('CORE_PERMISSION_DELETE')")
-    public ResponseEntity<Void> deletePermission(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePermission(@PathVariable("id") Long id) {
         permissionService.deletePermission(id);
         return ResponseEntity.noContent().build();
     }
@@ -74,7 +74,7 @@ public class PermissionController {
     @PostMapping("/api/v1/core/roles/{roleId}/permissions")
     @PreAuthorize("hasAuthority('CORE_PERMISSION_ASSIGN')")
     public ResponseEntity<ApiResponse<Map<String, String>>> assignPermission(
-            @PathVariable Long roleId, @Valid @RequestBody AssignPermissionRequest req) {
+            @PathVariable("roleId") Long roleId, @Valid @RequestBody AssignPermissionRequest req) {
         permissionService.assignPermissionToRole(roleId, req);
         return ResponseEntity.ok(ApiResponse.success(
                 Map.of("message", "Permission assigned to role successfully")));
@@ -82,8 +82,8 @@ public class PermissionController {
 
     @DeleteMapping("/api/v1/core/roles/{roleId}/permissions/{permissionId}")
     @PreAuthorize("hasAuthority('CORE_PERMISSION_ASSIGN')")
-    public ResponseEntity<Void> removePermission(@PathVariable Long roleId,
-                                                  @PathVariable Long permissionId) {
+    public ResponseEntity<Void> removePermission(@PathVariable("roleId") Long roleId,
+                                                  @PathVariable("permissionId") Long permissionId) {
         permissionService.removePermissionFromRole(roleId, permissionId);
         return ResponseEntity.noContent().build();
     }
@@ -91,7 +91,7 @@ public class PermissionController {
     @GetMapping("/api/v1/core/roles/{roleId}/permissions")
     @PreAuthorize("hasAuthority('CORE_PERMISSION_READ')")
     public ResponseEntity<ApiResponse<List<PermissionSummaryResponse>>> getPermissionsForRole(
-            @PathVariable Long roleId) {
+            @PathVariable("roleId") Long roleId) {
         return ResponseEntity.ok(ApiResponse.success(
                 permissionService.getPermissionsForRole(roleId)));
     }

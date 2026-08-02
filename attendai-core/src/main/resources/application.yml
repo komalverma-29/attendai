@@ -43,6 +43,10 @@ attendai:
     allowed-origins:
       - ${CORS_ALLOWED_ORIGIN:http://localhost:3000}
 
+  audit:
+    trust-proxy: false
+    max-details-length: 10000
+
 management:
   endpoints:
     web:

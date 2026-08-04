@@ -2,12 +2,13 @@ package com.attendai.core.auth.config;
 
 import com.attendai.core.auth.filter.JwtAuthenticationFilter;
 import com.attendai.core.auth.service.JwtService;
-import com.attendai.core.common.constants.AttendAIConstants;
 import com.attendai.core.common.response.ApiResponse;
 import com.attendai.core.common.response.ErrorResponse;
+import com.attendai.core.station.filter.StationAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Spring Security configuration for the AttendAI platform.
@@ -36,12 +38,14 @@ import java.util.List;
  *   <li>CSRF disabled — standard for stateless JWT APIs.</li>
  *   <li>All endpoints require authentication except the explicit public list.</li>
  *   <li>CORS origins configured from {@link SecurityProperties}.</li>
- *   <li>Both {@link org.springframework.security.web.AuthenticationEntryPoint} and
- *       {@link org.springframework.security.web.access.AccessDeniedHandler} return
- *       structured {@link ApiResponse} JSON, not Spring's default HTML error pages.</li>
+ *   <li>Both AuthenticationEntryPoint and AccessDeniedHandler return structured
+ *       {@link ApiResponse} JSON responses.</li>
  * </ul>
  *
- * <p>{@code @EnableMethodSecurity} activates {@code @PreAuthorize} on service methods.
+ * <p>Station authentication is handled by
+ * {@link com.attendai.core.station.config.StationSecurityConfig}, which registers
+ * {@link com.attendai.core.station.filter.StationAuthenticationFilter} separately.
+ * This keeps SecurityConfig free of a dependency on the station module.
  */
 @Configuration
 @EnableWebSecurity
@@ -49,21 +53,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private static final String[] PUBLIC_ENDPOINTS = {
+    static final String[] PUBLIC_ENDPOINTS = {
             "/api/v1/auth/login",
             "/api/v1/auth/refresh",
             "/api/v1/auth/password-reset/request",
             "/api/v1/auth/password-reset/confirm",
+            "/api/v1/core/stations/heartbeat",   // authenticated via X-Station-Api-Key
             "/actuator/health"
     };
 
-    private final JwtService        jwtService;
+    private final JwtService         jwtService;
     private final SecurityProperties securityProperties;
-    private final ObjectMapper       objectMapper;
+    private final ObjectMapper        objectMapper;
+
+    /**
+     * Optionally injected. Present at runtime when the station module is active.
+     * Null in @WebMvcTest slices that don't include StationSecurityConfig.
+     */
+    @Autowired(required = false)
+    private StationAuthenticationFilter stationAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
+        var chain = http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -78,8 +90,13 @@ public class SecurityConfig {
                     .accessDeniedHandler((request, response, accessDeniedException) ->
                             writeErrorResponse(response, HttpServletResponse.SC_FORBIDDEN,
                                     "FORBIDDEN", "You do not have permission to access this resource"))
-            )
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+            );
+
+        // Register station filter before JWT filter when the station module is present
+        if (stationAuthenticationFilter != null) {
+            chain.addFilterBefore(stationAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        }
+        chain.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -91,7 +108,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        int strength = Math.max(securityProperties.getBcryptStrength(), 10); // enforce minimum
+        int strength = Math.max(securityProperties.getBcryptStrength(), 10);
         return new BCryptPasswordEncoder(strength);
     }
 
@@ -114,16 +131,9 @@ public class SecurityConfig {
             response.setStatus(status);
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-
-            ErrorResponse error = ErrorResponse.builder()
-                    .code(code)
-                    .message(message)
-                    .build();
-            ApiResponse<Void> body = ApiResponse.error(error);
-
-            response.getWriter().write(objectMapper.writeValueAsString(body));
+            ErrorResponse error = ErrorResponse.builder().code(code).message(message).build();
+            response.getWriter().write(objectMapper.writeValueAsString(ApiResponse.error(error)));
         } catch (Exception e) {
-            // Last-resort fallback if JSON serialisation fails
             response.setStatus(status);
         }
     }

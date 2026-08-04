@@ -47,6 +47,11 @@ attendai:
     trust-proxy: false
     max-details-length: 10000
 
+  attendance:
+    dedup-window-seconds: 300
+    max-future-seconds: 60
+    max-past-hours: 24
+
 management:
   endpoints:
     web:

@@ -53,6 +53,14 @@ public final class SecurityContextUtils {
                     return Optional.empty();
                 }
             }
+            // Handle UserDetails (e.g., from @WithMockUser) — parse username as user ID
+            if (principal instanceof org.springframework.security.core.userdetails.UserDetails ud) {
+                try {
+                    return Optional.of(Long.parseLong(ud.getUsername()));
+                } catch (NumberFormatException ignored) {
+                    return Optional.empty();
+                }
+            }
             return Optional.empty();
         } catch (Exception e) {
             return Optional.empty();

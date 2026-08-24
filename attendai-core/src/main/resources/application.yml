@@ -52,6 +52,13 @@ attendai:
     max-future-seconds: 60
     max-past-hours: 24
 
+  file:
+    storage-backend: local
+    max-size-bytes: 10485760
+    allowed-types: image/jpeg,image/png,image/webp,application/pdf
+    presigned-url-max-ttl: 3600
+    local-base-path: ${FILE_STORAGE_PATH:/var/attendai/files}
+
 management:
   endpoints:
     web:

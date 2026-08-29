@@ -66,6 +66,11 @@ attendai:
     retry-interval-seconds: 300
     email-from: noreply@attendai.app
 
+  face:
+    recognition-threshold: 0.85
+    max-images-per-profile: 10
+    liveness-check-enabled: false
+
 management:
   endpoints:
     web:

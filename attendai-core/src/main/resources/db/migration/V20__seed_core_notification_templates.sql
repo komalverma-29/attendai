@@ -1,0 +1,20 @@
+-- V20: Seed core system notification templates
+INSERT IGNORE INTO notification_templates (type_code, channel, locale, subject, body_template, is_active, is_deleted) VALUES
+('AUTH_PASSWORD_RESET',       'EMAIL',  'en', 'Reset your AttendAI password',
+ 'Hello {{firstName}}, a password reset was requested for your account. Click {{resetLink}} to reset your password. This link expires in 1 hour. If you did not request this, you can ignore this email.',
+ TRUE, FALSE),
+('AUTH_PASSWORD_RESET',       'IN_APP', 'en', NULL,
+ 'A password reset was requested for your account.',
+ TRUE, FALSE),
+('AUTH_TOKEN_REUSE_DETECTED', 'EMAIL',  'en', 'Security Alert: Your AttendAI session was terminated',
+ 'Hello {{firstName}}, we detected suspicious activity on your account and have terminated all active sessions for your security. Please log in again.',
+ TRUE, FALSE),
+('AUTH_TOKEN_REUSE_DETECTED', 'IN_APP', 'en', NULL,
+ 'Security alert: suspicious activity was detected and all your sessions have been terminated.',
+ TRUE, FALSE),
+('SYSTEM_ACCOUNT_CREATED',   'IN_APP', 'en', NULL,
+ 'Welcome to AttendAI! Your account has been created successfully.',
+ TRUE, FALSE),
+('SYSTEM_ACCOUNT_DEACTIVATED', 'IN_APP', 'en', NULL,
+ 'Your account has been deactivated. Please contact your administrator.',
+ TRUE, FALSE);

@@ -59,6 +59,13 @@ attendai:
     presigned-url-max-ttl: 3600
     local-base-path: ${FILE_STORAGE_PATH:/var/attendai/files}
 
+  notification:
+    email-enabled: false
+    push-enabled: false
+    retry-max-attempts: 3
+    retry-interval-seconds: 300
+    email-from: noreply@attendai.app
+
 management:
   endpoints:
     web:

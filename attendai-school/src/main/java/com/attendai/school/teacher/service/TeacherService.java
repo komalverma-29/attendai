@@ -26,4 +26,17 @@ public interface TeacherService {
     TeacherResponse removeUser(Long schoolId, Long id);
 
     void deleteTeacher(Long schoolId, Long id);
+
+    // -------------------------------------------------------------------------
+    // Internal APIs — consumed by school-teacher-assignment (Round 3+)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Returns true if a teacher with the given id exists and has ACTIVE status.
+     * ON_LEAVE and INACTIVE are treated as not active for assignment purposes.
+     */
+    boolean isActive(Long id);
+
+    /** Returns true if a teacher record with the given id exists (any status). */
+    boolean existsById(Long id);
 }

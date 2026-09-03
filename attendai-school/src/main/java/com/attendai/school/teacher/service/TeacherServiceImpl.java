@@ -228,6 +228,24 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     // -------------------------------------------------------------------------
+    // Internal APIs
+    // -------------------------------------------------------------------------
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isActive(Long id) {
+        return teacherRepository.findById(id)
+                .map(t -> TeacherStatus.ACTIVE.equals(t.getStatus()))
+                .orElse(false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existsById(Long id) {
+        return teacherRepository.existsById(id);
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 

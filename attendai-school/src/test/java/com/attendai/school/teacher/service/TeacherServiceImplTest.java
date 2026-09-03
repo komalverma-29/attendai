@@ -143,6 +143,36 @@ class TeacherServiceImplTest {
                 .hasMessageContaining("does not have a linked user");
     }
 
+    // -------------------------------------------------------------------------
+    // Internal APIs — isActive, existsById
+    // -------------------------------------------------------------------------
+
+    @Test
+    void isActive_shouldReturnTrue_whenTeacherStatusIsActive() {
+        SchoolTeacher t = buildTeacher(1L, 1L, 10L, null, TeacherStatus.ACTIVE);
+        when(teacherRepository.findById(1L)).thenReturn(Optional.of(t));
+        assertThat(service.isActive(1L)).isTrue();
+    }
+
+    @Test
+    void isActive_shouldReturnFalse_whenTeacherStatusIsOnLeave() {
+        SchoolTeacher t = buildTeacher(1L, 1L, 10L, null, TeacherStatus.ON_LEAVE);
+        when(teacherRepository.findById(1L)).thenReturn(Optional.of(t));
+        assertThat(service.isActive(1L)).isFalse();
+    }
+
+    @Test
+    void isActive_shouldReturnFalse_whenTeacherNotFound() {
+        when(teacherRepository.findById(99L)).thenReturn(Optional.empty());
+        assertThat(service.isActive(99L)).isFalse();
+    }
+
+    @Test
+    void existsById_shouldReturnTrue_whenTeacherExists() {
+        when(teacherRepository.existsById(1L)).thenReturn(true);
+        assertThat(service.existsById(1L)).isTrue();
+    }
+
     // Helpers
 
     private SchoolTeacher buildTeacher(Long id, Long schoolId, Long personId,

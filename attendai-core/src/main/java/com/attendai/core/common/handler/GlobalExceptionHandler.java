@@ -176,6 +176,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(error));
     }
 
+    /**
+     * Handles missing required @RequestParam values.
+     */
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMissingRequestParam(
+            org.springframework.web.bind.MissingServletRequestParameterException ex,
+            HttpServletRequest request) {
+        log.warn("[HTTP 400] MISSING_PARAMETER - {} | path={}", ex.getParameterName(), request.getRequestURI());
+        ErrorResponse error = ErrorResponse.builder()
+                .code("VALIDATION_FAILED")
+                .message("Required parameter '" + ex.getParameterName() + "' is missing")
+                .path(request.getRequestURI())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error(error));
+    }
+
     // -------------------------------------------------------------------------
     // Spring Security exceptions
     // -------------------------------------------------------------------------

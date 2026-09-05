@@ -10,19 +10,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Repository for {@link School} entities.
- *
- * The {@code @SQLRestriction("is_deleted = false")} inherited from
- * {@link com.attendai.core.common.entity.SoftDeletableEntity} automatically
- * excludes soft-deleted schools from all standard queries.
  */
 @Repository
 public interface SchoolRepository extends JpaRepository<School, Long> {
 
     Optional<School> findByCode(String code);
+
+    /** Used by scheduled jobs to iterate all active schools. */
+    List<School> findAllByStatus(SchoolStatus status);
 
     boolean existsByName(String name);
 

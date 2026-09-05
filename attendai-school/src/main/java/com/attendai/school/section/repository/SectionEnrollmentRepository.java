@@ -33,4 +33,7 @@ public interface SectionEnrollmentRepository extends JpaRepository<SectionEnroll
     /** Used for isStudentEnrolledInSection internal API. */
     boolean existsBySectionIdAndStudentIdAndAcademicYearId(Long sectionId, Long studentId,
                                                             Long academicYearId);
+
+    /** All enrollments for an academic year — used by mark-absent job to find all enrolled students. */
+    List<SectionEnrollment> findByAcademicYearId(Long academicYearId);
 }

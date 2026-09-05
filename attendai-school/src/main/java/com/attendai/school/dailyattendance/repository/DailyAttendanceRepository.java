@@ -48,4 +48,16 @@ public interface DailyAttendanceRepository extends JpaRepository<DailyAttendance
 
     /** Count records for school+date — used by scheduler to check if job already ran. */
     long countBySchoolIdAndAttendanceDate(Long schoolId, LocalDate date);
+
+    /** All records for a school within a date range — used by overview report. */
+    @Query("""
+            SELECT r FROM DailyAttendanceRecord r
+            WHERE r.schoolId       = :schoolId
+              AND r.attendanceDate >= :fromDate
+              AND r.attendanceDate <= :toDate
+            """)
+    List<DailyAttendanceRecord> findBySchoolIdAndDateRange(
+            @Param("schoolId")  Long      schoolId,
+            @Param("fromDate")  LocalDate fromDate,
+            @Param("toDate")    LocalDate toDate);
 }

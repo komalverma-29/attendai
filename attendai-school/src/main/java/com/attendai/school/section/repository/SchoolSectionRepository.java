@@ -12,6 +12,9 @@ public interface SchoolSectionRepository extends JpaRepository<SchoolSection, Lo
     /** Sections for a given class + academic year, for listing. */
     List<SchoolSection> findByClassIdAndAcademicYearId(Long classId, Long academicYearId);
 
+    /** All sections for a school in an academic year — used by dashboard section-wise summary. */
+    List<SchoolSection> findBySchoolIdAndAcademicYearId(Long schoolId, Long academicYearId);
+
     /** Used to enforce BR-SEC-01: name unique within class+year. */
     boolean existsByClassIdAndAcademicYearIdAndName(Long classId, Long academicYearId,
                                                      String name);

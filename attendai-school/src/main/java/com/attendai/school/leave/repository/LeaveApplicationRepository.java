@@ -68,4 +68,7 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
             @Param("fromDate")  LocalDate          fromDate,
             @Param("toDate")    LocalDate          toDate,
             Pageable pageable);
+
+    /** Count PENDING applications for a school — used by dashboard. */
+    long countBySchoolIdAndStatus(Long schoolId, LeaveStatus status);
 }

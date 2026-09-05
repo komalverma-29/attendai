@@ -35,4 +35,7 @@ public interface AttendanceCorrectionRepository
             @Param("fromDate")  LocalDate        fromDate,
             @Param("toDate")    LocalDate        toDate,
             Pageable pageable);
+
+    /** Count PENDING corrections for a school — used by dashboard. */
+    long countBySchoolIdAndStatus(Long schoolId, CorrectionStatus status);
 }
